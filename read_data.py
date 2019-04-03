@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # read all files in data dir
-files = glob.glob('data/*.dat')
+files = glob.glob('data\\*.dat')
 
 # define the classes to extract the corresponding heartbeat
 classes = ['N', 'L', 'R', 'E', '/', 'V', 'A', '!']
@@ -18,6 +18,7 @@ mapping = {'N': 'NOR', 'L': 'LBB', 'R': 'RBB', 'E': 'VEB', '/': 'PAB', 'V': 'PVC
 count = {'N': 0, 'L': 0, 'R': 0, 'E': 0, '/': 0, 'V': 0, 'A': 0, '!': 0}
 
 for record in files:
+    print(record)
     record = record[:-4]
     signals, fields = wfdb.rdsamp(record, channels = [0])  
     annotation = wfdb.rdann(record, 'atr')
@@ -79,7 +80,7 @@ for record in files:
             continue
             
         val = segments[key]
-        directory = 'samples/' + mapping[key]
+        directory = 'samples\\' + mapping[key]
         if not os.path.isdir(directory):
             os.makedirs(directory)
         
@@ -90,7 +91,7 @@ for record in files:
             for spine in plt.gca().spines.values():
                 spine.set_visible(False)
         
-            filename = directory + '/' + str(count[key] + 1) + '.png'
+            filename = directory + '\\' + str(count[key] + 1) + '.png'
             count[key] += 1
             fig.savefig(filename)
             plt.close(fig=fig)
