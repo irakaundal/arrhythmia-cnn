@@ -37,6 +37,13 @@ with open('test.csv','w') as csvFile:
 
 
 '''for i in range(0,len(list_samples)):
+=======
+train_csv = [['image_name', 'class']]
+test_csv = [['image_name', 'class']]
+sample_dir = os.path.join(BASE_DIR, 'samples')
+list_samples = os.listdir(sample_dir)
+for i in range(0,len(list_samples)):
+>>>>>>> cd1678891826673e736e2efaedfe35fad9eef3a0
         _class  = list_samples[i]
         class_dir = os.path.join(sample_dir,_class)
         list_images = os.listdir(class_dir)
@@ -68,10 +75,8 @@ with open('train.csv','w') as csvFile:
 with open('test.csv','w') as csvFile:
     writer = csv.writer(csvFile)
     writer.writerows(testList)
-
-df = pd.read_csv('train.csv', header=None)
-ds = df.sample(frac=1)
-ds.to_csv('train_new.csv')
-df = pd.read_csv('test.csv', header=None)
-ds = df.sample(frac=1)
-ds.to_csv('test_new.csv')'''
+    ds = df.sample(frac=1)
+    ds.to_csv('train_new.csv')
+    df = pd.read_csv('test.csv', header=None)
+    ds = df.sample(frac=1)
+    ds.to_csv('test_new.csv')'''

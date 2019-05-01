@@ -5,11 +5,7 @@ from callbacks import CustomModelCheckpoint
 from generator import csv_image_generator
 from model import define_model
 from keras.callbacks import ModelCheckpoint
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-import numpy as np
-import csv
-import cv2
-import os
+
 
 model = define_model()
 
