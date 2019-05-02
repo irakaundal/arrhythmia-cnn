@@ -5,10 +5,77 @@ from callbacks import CustomModelCheckpoint
 from generator import csv_image_generator
 from model import define_model
 from keras.callbacks import ModelCheckpoint
+from sklearn.model_selection import StratifiedKFold
+import os
+import cv2
+import numpy as np
+from sklearn.metrics import confusion_matrix
+import random
+from sklearn.metrics import accuracy_score
+import statistics
 
+X = []
+y = []
+sample_dir = os.path.join(BASE_DIR, 'samples')
+list_samples = os.listdir(sample_dir)
+for sam in list_samples:
+    im_dir = os.path.join(sample_dir, sam)
+    list_imgs = os.listdir(im_dir)
+    for i in list_imgs:
+        image = cv2.imread(os.path.join(im_dir,i))
+        if type(X) == list:
+            X.append(image)
+        else:
+            np.append(X, [image], axis=0)
+        y.append(sam)
 
-model = define_model()
+combined = list(zip(X, y))
+random.shuffle(combined)
+X[:], y[:] = zip(*combined)
+skf = StratifiedKFold(n_splits=10, shuffle=True)
+skf.get_n_splits(X, y)
+X = np.array(X)
+y = np.array(y)
+accs = []
+for index, (train_index, test_index) in enumerate(skf.split(X, y)):
+    X_train, X_test = X[train_index], X[test_index]
+    y_train, y_test = y[train_index], y[test_index]
+    model = None
+    model = define_model()
+    # Debug message I guess
+    print ("Training new iteration on " + str(X_train.shape[0]) + " training samples, " + str(X_test.shape[0]) + " validation samples, this may be a while...")
+    y_tr = []
+    y_te = []
+    for i in range(0, len(y_train)):
+        lab = [0, 0, 0, 0, 0, 0, 0, 0]
+        lab[encoding[y_train[i]] - 1] = 1
+        y_tr.append(lab)
+    for i in range(0, len(y_test)):
+        lab = [0, 0, 0, 0, 0, 0, 0, 0]
+        lab[encoding[y_test[i]] - 1] = 1
+        y_te.append(lab)
+    y_train = np.array(y_tr)
+    y_test = np.array(y_te)
+    X_train = np.array(X_train)
+    X_test = np.array(X_test)
+    model.fit(X_train, y_train, batch_size=64, epochs=50)
+    eval_model = model.evaluate(X_train, y_train)
+    print("Model evaluation" + str(eval_model))
+    y_pred = model.predict(X_test)
+    y_pred = (y_pred > 0.5)
+    cm = confusion_matrix(y_test, y_pred)
+    print("Confusion Matrix" + cm)
+    idx = np.argmax(y_pred, axis=-1)
+    y_pred = np.zeros(y_pred.shape)
+    y_pred[np.arange(y_pred.shape[0]), idx] = 1
+    # acc = categorical_accuracy(y_test, y_pred)
+    acc = accuracy_score(y_test, y_pred)
+    accs.append(acc*100)
+    print("Accuracy is: ", acc * 100)
 
+print("List of accuracies: ", accs)
+print("Final accuracy: ", str(statistics.mean(accs)))
+'''
 f = open(TRAIN_CSV, "r")
 labels = set()
 testLabels = []
@@ -52,12 +119,12 @@ lb = LabelBinarizer()
 lb.fit(list(labels))
 testLabels = lb.transform(testLabels)
 
-# construct the training image generator for data augmentation
-'''
+# construct the training image generator for data augmentatione
+
 aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15,
     width_shift_range=0.2, height_shift_range=0.2, shear_range=0.15,
     horizontal_flip=True, fill_mode="nearest")
-'''
+
 
 trainGen = csv_image_generator(BASE_DIR, BS,
     mode="train")
@@ -82,7 +149,7 @@ workers=1,
 max_queue_size=8,
 callbacks=[checkpoint]
 )
-'''
+
 X_train = []
 y_train = []
 with open('train.csv', 'r') as csvFile:
