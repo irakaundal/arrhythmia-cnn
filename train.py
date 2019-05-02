@@ -19,7 +19,12 @@ X = []
 y = []
 sample_dir = os.path.join(BASE_DIR, 'samples')
 list_samples = os.listdir(sample_dir)
+cnt = 0
 for sam in list_samples:
+    cnt = cnt + 1
+    if cnt >2:
+        break
+    print("Loading images for "+sam)
     im_dir = os.path.join(sample_dir, sam)
     list_imgs = os.listdir(im_dir)
     for i in list_imgs:
@@ -96,12 +101,25 @@ for index, (train_index, test_index) in enumerate(skf.split(X, y)):
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
 
+    with open("X_train_"+str(index+1)+".pkl", 'wb') as f:
+        pickle.dump(X_train, f)
+    f.close()
+    with open("X_test_"+str(index+1)+".pkl", 'wb') as f:
+        pickle.dump(X_test, f)
+    f.close()
+    with open("y_train_"+str(index+1)+".pkl", 'wb') as f:
+        pickle.dump(y_train, f)
+    f.close()
+    with open("y_test_"+str(index+1)+".pkl", 'wb') as f:
+        pickle.dump(y_test, f)
+    f.close()
+
     d = {'X_train': X_train,
          'X_test': X_test,
          'y_train': y_train,
          'y_test': y_test}
     pickle_out = open("training_set_"+str(index+1)+".pickle", "wb")
-    pickle.dump(d, pickle_out)
+    pickle.dump(d, pickle_out, protocol=4)
     pickle_out.close()
 
     model = None
@@ -122,7 +140,7 @@ for index, (train_index, test_index) in enumerate(skf.split(X, y)):
     y_test = np.array(y_te)
     X_train = np.array(X_train)
     X_test = np.array(X_test)
-    model.fit(X_train, y_train, batch_size=64, epochs=100)
+    model.fit(X_train, y_train, batch_size=64, epochs=1)
     eval_model = model.evaluate(X_train, y_train)
     print("Model evaluation" + str(eval_model))
 
@@ -130,8 +148,6 @@ for index, (train_index, test_index) in enumerate(skf.split(X, y)):
 
     y_pred = model.predict(X_test)
     y_pred = (y_pred > 0.5)
-    cm = confusion_matrix(y_test, y_pred)
-    print("Confusion Matrix" + cm)
     idx = np.argmax(y_pred, axis=-1)
     y_pred = np.zeros(y_pred.shape)
     y_pred[np.arange(y_pred.shape[0]), idx] = 1
