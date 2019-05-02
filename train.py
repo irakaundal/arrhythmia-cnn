@@ -13,6 +13,7 @@ from sklearn.metrics import confusion_matrix
 import random
 from sklearn.metrics import accuracy_score
 import statistics
+import pickle
 
 X = []
 y = []
@@ -28,6 +29,60 @@ for sam in list_samples:
         else:
             np.append(X, [image], axis=0)
         y.append(sam)
+        if sam != 'NOR':
+            # apply augmentation and add to training set
+            crop = image[:96, :96]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
+
+            # Center Top Crop
+            crop = image[:96, 16:112]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
+
+            # Right Top Crop
+            crop = image[:96, 32:]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
+
+            # Left Center Crop
+            crop = image[16:112, :96]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
+
+            # Center Center Crop
+            crop = image[16:112, 16:112]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
+
+            # Right Center Crop
+            crop = image[16:112, 32:]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
+
+            # Left Bottom Crop
+            crop = image[32:, :96]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
+
+            # Center Bottom Crop
+            crop = image[32:, 16:112]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
+
+            # Right Bottom Crop
+            crop = image[32:, 32:]
+            crop = cv2.resize(crop, (128, 128))
+            X.append(crop)
+            y.append(sam)
 
 combined = list(zip(X, y))
 random.shuffle(combined)
@@ -40,6 +95,15 @@ accs = []
 for index, (train_index, test_index) in enumerate(skf.split(X, y)):
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
+
+    d = {'X_train': X_train,
+         'X_test': X_test,
+         'y_train': y_train,
+         'y_test': y_test}
+    pickle_out = open("training_set_"+str(index+1)+".pickle", "wb")
+    pickle.dump(d, pickle_out)
+    pickle_out.close()
+
     model = None
     model = define_model()
     # Debug message I guess
@@ -58,9 +122,12 @@ for index, (train_index, test_index) in enumerate(skf.split(X, y)):
     y_test = np.array(y_te)
     X_train = np.array(X_train)
     X_test = np.array(X_test)
-    model.fit(X_train, y_train, batch_size=64, epochs=50)
+    model.fit(X_train, y_train, batch_size=64, epochs=100)
     eval_model = model.evaluate(X_train, y_train)
     print("Model evaluation" + str(eval_model))
+
+    model.save_weights("model_"+str(index+1)+".h5")
+
     y_pred = model.predict(X_test)
     y_pred = (y_pred > 0.5)
     cm = confusion_matrix(y_test, y_pred)
