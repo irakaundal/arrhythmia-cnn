@@ -1,29 +1,38 @@
-from keras.preprocessing.image import ImageDataGenerator
 from utils import TRAIN_CSV, TEST_CSV, BS, NUM_EPOCHS, BASE_DIR, SAMPLE_DIR,encoding
-from sklearn.preprocessing import LabelBinarizer
-from callbacks import CustomModelCheckpoint
-from generator import csv_image_generator
 from model import define_model
-from keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import StratifiedKFold
+from keras.callbacks import ModelCheckpoint
 import os
 import cv2
 import numpy as np
-from sklearn.metrics import confusion_matrix
 import random
 from sklearn.metrics import accuracy_score
 import statistics
 import pickle
+import matplotlib.pyplot as plt
+
+def plot(history, filename):
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.savefig(filename+'_acc')
+    # summarize history for loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show(filename+'_loss')
 
 X = []
 y = []
 sample_dir = os.path.join(BASE_DIR, 'samples')
 list_samples = os.listdir(sample_dir)
-cnt = 0
 for sam in list_samples:
-    cnt = cnt + 1
-    if cnt >2:
-        break
     print("Loading images for "+sam)
     im_dir = os.path.join(sample_dir, sam)
     list_imgs = os.listdir(im_dir)
@@ -102,26 +111,28 @@ for index, (train_index, test_index) in enumerate(skf.split(X, y)):
     y_train, y_test = y[train_index], y[test_index]
 
     with open("X_train_"+str(index+1)+".pkl", 'wb') as f:
-        pickle.dump(X_train, f)
+        pickle.dump(X_train, f , protocol=4)
     f.close()
     with open("X_test_"+str(index+1)+".pkl", 'wb') as f:
-        pickle.dump(X_test, f)
+        pickle.dump(X_test, f, protocol=4)
     f.close()
     with open("y_train_"+str(index+1)+".pkl", 'wb') as f:
-        pickle.dump(y_train, f)
+        pickle.dump(y_train, f, protocol=4)
     f.close()
     with open("y_test_"+str(index+1)+".pkl", 'wb') as f:
-        pickle.dump(y_test, f)
+        pickle.dump(y_test, f, protocol=4)
     f.close()
 
-    d = {'X_train': X_train,
+    '''d = {'X_train': X_train,
          'X_test': X_test,
          'y_train': y_train,
          'y_test': y_test}
     pickle_out = open("training_set_"+str(index+1)+".pickle", "wb")
     pickle.dump(d, pickle_out, protocol=4)
-    pickle_out.close()
+    pickle_out.close()'''
 
+    checkpoint = ModelCheckpoint("model_"+str(index+1)+".h5", monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    callbacks_list = [checkpoint]
     model = None
     model = define_model()
     # Debug message I guess
@@ -140,24 +151,22 @@ for index, (train_index, test_index) in enumerate(skf.split(X, y)):
     y_test = np.array(y_te)
     X_train = np.array(X_train)
     X_test = np.array(X_test)
-    model.fit(X_train, y_train, batch_size=64, epochs=1)
-    eval_model = model.evaluate(X_train, y_train)
-    print("Model evaluation" + str(eval_model))
-
-    model.save_weights("model_"+str(index+1)+".h5")
-
-    y_pred = model.predict(X_test)
-    y_pred = (y_pred > 0.5)
-    idx = np.argmax(y_pred, axis=-1)
-    y_pred = np.zeros(y_pred.shape)
-    y_pred[np.arange(y_pred.shape[0]), idx] = 1
-    # acc = categorical_accuracy(y_test, y_pred)
-    acc = accuracy_score(y_test, y_pred)
-    accs.append(acc*100)
-    print("Accuracy is: ", acc * 100)
+    history = model.fit(X_train, y_train, batch_size=64, epochs=30)
+    eval_model = model.evaluate(X_test, y_test, verbose=1)
+    print("%s: %.2f%%" % (model.metrics_names[1], eval_model[1]*100))
+    print("%s: %.2f%%" % (model.metrics_names[0], eval_model[0]))
+    accs.append(eval_model[1]*100)
+    #plot(history= history, filename="plot_"+str(index+1))
+    model.save_weights('model_'+str(index+1)+'.h5')
+    with open('results.txt', 'a+') as f:
+        f.write("Set "+ str(index+1)+" Loss is: "+str(eval_model[0])+" Accuracy is: " + str(eval_model[1] * 100) +'\n')
+    f.close()
 
 print("List of accuracies: ", accs)
 print("Final accuracy: ", str(statistics.mean(accs)))
+with open('results.txt', 'a+') as f:
+    f.write("Final List of accuracies: " + str(accs) +"Final Mean accuracy: "+str(statistics.mean(accs)) + '\n')
+f.close()
 '''
 f = open(TRAIN_CSV, "r")
 labels = set()

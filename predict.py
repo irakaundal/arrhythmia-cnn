@@ -8,12 +8,31 @@ import numpy as np
 import cv2
 import os
 from utils import SAMPLE_DIR
+import pickle
 from model import define_model
 
 model = define_model()
-model.load_weights('model_new.h5')
-
-X_test = []
+model.load_weights('model_1.h5')
+with open('X_test_1.pkl', 'rb') as f:
+    X_test = pickle.load(f)
+f.close()
+with open('y_test_1.pkl', 'rb') as f:
+    y_test = pickle.load(f)
+f.close()
+y_pred = model.predict(X_test)
+y_pred = (y_pred > 0.5)
+idx = np.argmax(y_pred, axis=-1)
+y_pred = np.zeros(y_pred.shape)
+y_pred[np.arange(y_pred.shape[0]), idx] = 1
+# acc = categorical_accuracy(y_test, y_pred)
+y = []
+for i in range(0, len(y_test)):
+    lab = [0, 0, 0, 0, 0, 0, 0, 0]
+    lab[encoding[y_test[i]] - 1] = 1
+    y.append(lab)
+acc = accuracy_score(np.array(y), y_pred)
+print("Accuracy is: ", acc * 100)
+'''X_test = []
 y_test = []
 
 with open('test.csv') as f:
@@ -41,7 +60,7 @@ acc = accuracy_score(y_test, y_pred)
 
 print("Accuracy is: ", acc*100)
 
-'''
+
 testGen = csv_image_generator(BASE_DIR, BS, mode="test", aug=None)
 predIdxs = model.predict_generator(testGen, steps=(1600 // BS)+1)
 predIdxs = np.argmax(predIdxs, axis=1)
