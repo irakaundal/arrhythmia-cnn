@@ -1,0 +1,7 @@
+Fragments Type 1 & Dividing Mean Component - acc: 93.48%  loss: 0.21%
+Fragments Type 2 & Dividing Mean Component - acc: 98.56%  loss: 0.11%
+Fragments Type 3 & Dividing Mean Component - acc: 98.47%  loss: 0.15%
+
+Fragments Type 1 & Subtracting Mean Component - acc: 97.97%  loss: 0.16%
+Fragments Type 2 & Subtracting Mean Component - acc: 99.06%  loss: 0.08%
+Fragments Type 3 & Subtracting Mean Component - acc: 98.59%  loss: 0.14%

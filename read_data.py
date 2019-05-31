@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # read all files in data dir
-files = glob.glob('data\\*.dat')
+files = glob.glob('data/*.dat')
 
 # define the classes to extract the corresponding heartbeat
 classes = ['N', 'L', 'R', 'E', '/', 'V', 'A', '!']
@@ -80,7 +80,7 @@ for record in files:
             continue
             
         val = segments[key]
-        directory = 'samples\\' + mapping[key]
+        directory = 'samples/' + mapping[key]
         if not os.path.isdir(directory):
             os.makedirs(directory)
         
@@ -91,7 +91,7 @@ for record in files:
             for spine in plt.gca().spines.values():
                 spine.set_visible(False)
         
-            filename = directory + '\\' + str(count[key] + 1) + '.png'
+            filename = directory + '/' + str(count[key] + 1) + '.png'
             count[key] += 1
             fig.savefig(filename)
             plt.close(fig=fig)

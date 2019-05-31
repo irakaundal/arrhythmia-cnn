@@ -1,6 +1,6 @@
 from keras import Sequential
 from keras.layers import Conv1D, BatchNormalization, MaxPool1D, Flatten, Dense, Dropout
-from read_data_1d import read_data
+from read_data_1d_fragments import read_data
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 
 def define_model():
     model = Sequential()
-    model.add(Conv1D(input_shape=(300, 1), filters=128, kernel_size=10, strides=3, activation='relu', kernel_initializer='glorot_uniform', data_format="channels_last"))
+    model.add(Conv1D(input_shape=(360, 1), filters=128, kernel_size=10, strides=3, activation='relu', kernel_initializer='glorot_uniform', data_format="channels_last"))
     model.add(BatchNormalization())
     model.add(MaxPool1D(pool_size=2, strides=3))
 
@@ -48,7 +48,6 @@ def run():
     y = onehot_encoder.fit_transform(integer_encoded)
     X = np.array(X)
     y = np.array(y)
-    print('dfghj')
     combined = list(zip(X, y))
     random.shuffle(combined)
     X[:], y[:] = zip(*combined)
@@ -58,7 +57,10 @@ def run():
     eval_model = model.evaluate(X_test, y_test, verbose=1)
     print("%s: %.2f%%" % (model.metrics_names[1], eval_model[1] * 100))
     print("%s: %.2f%%" % (model.metrics_names[0], eval_model[0]))
-    model.save_weights('model_1d_cnn.h5')
+    model.save_weights('model_1d_fragments_type3_part2.h5')
+    with open('Results.txt', 'a+') as f:
+        f.write("Fragments Type 3 & Subtracting Mean Component - " + "%s: %.2f%%" % (model.metrics_names[1], eval_model[1] * 100) + "  " + "%s: %.2f%%" % (model.metrics_names[0], eval_model[0]) + '\n')
+    f.close()
 
 if __name__ == "__main__":
     run()
