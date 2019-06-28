@@ -103,7 +103,7 @@ def standardize(signal):
 def preprocess(signals, type):
     for i in range(0, len(signals)):
         signals[i] = gain_reduction(signal=signals[i])
-        signals[i] = const_comp_reduction(signal=signals[i])
+        #signals[i] = const_comp_reduction(signal=signals[i])
         if type == 2:
             signals[i] = rescaling_paper(signal = signals[i])
             #signals[i] = rescaling(signal= signals[i])
