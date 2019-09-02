@@ -9,7 +9,7 @@ import cv2
 import os
 from utils import SAMPLE_DIR
 import pickle
-from model import define_model
+from model_2d import define_model
 
 model = define_model()
 model.load_weights('model_1.h5')

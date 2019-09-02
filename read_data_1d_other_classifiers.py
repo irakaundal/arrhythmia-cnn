@@ -73,11 +73,9 @@ def add_to_data(signals, i, label, beats):
             cv2.imwrite(filename, im_gray)'''
 
             if label in beats_data:
-                beats_data[label].append(data)
+                beats_data[label].append(data.reshape(1,-1))
             else:
-                beats_data[label] = [data]
-            X.append(data)
-            y.append(label)
+                beats_data[label] = [data.reshape(1,-1)]
             return True, done
     return False, None
 
@@ -118,62 +116,29 @@ def read_data():
         print(key+' -count is: '+str(len(pair)))
         if len(pair) >= threshold:
             random.shuffle(pair)
-            new_data[key] = pair[:5000]
+            p = np.array(pair[:5000])
+            nsamples, nx, ny = p.shape
+            new_data[key] = p.reshape((nsamples, nx * ny))
         else:
             a = pair
             b = []
             while len(b) < threshold:
                 b.extend(a)
             random.shuffle(b)
-            new_data[key] = b[:5000]
+            p = np.array(b[:5000])
+            nsamples, nx, ny = p.shape
+            new_data[key] = p.reshape((nsamples, nx * ny))
         sum += len(pair)
     print('Total - ' + str(sum))
-    sum = 0
-    X_train = []
-    y_train = []
-    X_validation = []
-    y_validation = []
-    X_test = []
-    y_test = []
+    X = []
+    y = []
     for key, pair in new_data.items():
-        print(key + ' -count is: ' + str(len(pair)))
-        sum += len(pair)
-        train_idx = int(0.7 * len(pair))
-        valid_idx = train_idx + int(0.15 * len(pair))
-        train = pair[: train_idx]
-        validation = pair[train_idx: valid_idx]
-        test = pair[valid_idx:]
-        X_train.extend(train)
-        X_validation.extend(validation)
-        X_test.extend(test)
-        y_train.extend([key] * len(train))
-        y_validation.extend([key] * len(validation))
-        y_test.extend([key] * len(test))
-    print('Total - ' + str(sum))
+        X.extend(pair)
+        for i in range(0, len(pair)):
+            y.append(key)
 
-    return np.array(X_train), np.array(y_train), np.array(X_validation), np.array(y_validation), np.array(X_test), np.array(y_test)
-    #return X, y
+    return np.array(X), np.array(y)
 
 
 if __name__ == "__main__":
     a,b = read_data()
-'''
-count = {'N': 0,
-         'L': 0,
-             'A': 0,
-             'R': 0,
-             'B': 0,
-             'a': 0,
-             'J': 0,
-             'V': 0,
-             'S': 0,
-             'r': 0,
-             'e': 0,
-             'j': 0,
-             'n': 0,
-             'F': 0,
-             'E': 0,
-             '/': 0,
-            'f': 0}'''
-
-

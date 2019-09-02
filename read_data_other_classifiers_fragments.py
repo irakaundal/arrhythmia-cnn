@@ -123,33 +123,8 @@ def read_data():
                 i += 1
 
     print('Hello')
-    sum = 0
-    X_train = []
-    y_train = []
-    X_validation = []
-    y_validation = []
-    X_test = []
-    y_test = []
-    for key, pair in beats_data.items():
-        print(key+' -count is: '+str(len(pair)))
-        sum += len(pair)
-        random.shuffle(pair)
-        train_idx = int(0.7*len(pair))
-        valid_idx = train_idx + int(0.15*len(pair))
-        train = pair[ : train_idx]
-        validation = pair[train_idx : valid_idx]
-        test = pair[valid_idx : ]
-        X_train.extend(train)
-        X_validation.extend(validation)
-        X_test.extend(test)
-        y_train.extend([key]*len(train))
-        y_validation.extend([key] * len(validation))
-        y_test.extend([key] * len(test))
-    print('Total: '+ str(sum))
-    X_train = preprocess(signals = X_train, type = 2)
-    X_validation = preprocess(signals=X_validation, type=2)
-    X_test = preprocess(signals=X_test, type=2)
-    return np.array(X_train), np.array(y_train), np.array(X_validation), np.array(y_validation), np.array(X_test), np.array(y_test)
+    x = preprocess(signals = X, type = 2)
+    return np.array(x), np.array(y)
 
 if __name__ == "__main__":
     X, y = read_data()

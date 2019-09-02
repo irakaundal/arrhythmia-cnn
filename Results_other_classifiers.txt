@@ -1,0 +1,25 @@
+Accuracy for SVM Classifier with linear kernel and C=1.0 with fragments with 10-fold cross validation is: 82.92931280092176%
+Accuracy for SVM Classifier with linear kernel and C=1.0 with fragments without 10-fold cross validation is: 76.96969696969697%
+Accuracy for SVM Classifier with linear kernel and C=1.0 with 1d data without 10-fold cross validation is: 96.7807486631016%
+Accuracy for SVM Classifier with linear kernel and C=1.0 with 1d data with 10-fold cross validation is: 97.27653897928109%
+
+Accuracy for Random Forest Classifier with 100 estimators and with fragments with 10-fold cross validation is: 91.61483525340712%
+Accuracy for Random Forest Classifier with 100 estimators and with fragments without 10-fold cross validation is: 85.15151515151516%
+Accuracy for Random Forest Classifier with 100 estimators with 1d data without 10-fold cross validation is: 99.72549019607844%
+Accuracy for Random Forest Classifier with 100 estimators with 1d data with 10-fold cross validation is: 99.91763970134716%
+
+Accuracy for Decision Tree Classifier with gini criterion, 100 random state, max depth=10, minimum samples leaf=17 and with fragments with 10-fold cross validation is: 56.582561274983846%
+Accuracy for Decision Tree Classifier with gini criterion, 100 random state, max depth=10, minimum samples leaf=17 with 1d data without 10-fold cross validation is: 86.22103386809269%
+Accuracy for Decision Tree Classifier with gini criterion, 100 random state, max depth=10, minimum samples leaf=17 and with fragments without 10-fold cross validation is: 48.484848484848484%
+Accuracy for Decision Tree Classifier with gini criterion, 100 random state, max depth=10, minimum samples leaf=17 with 1d data with 10-fold cross validation is: 86.10955928856356%
+
+Accuracy for Gaussian Naive Bayes Classifier and with fragments with 10-fold cross validation is: 48.29181356936646%
+Accuracy for Gaussian Naive Bayes Classifier and with fragments without 10-fold cross validation is: 47.57575757575758%
+Accuracy for Gaussian Naive Bayes Classifier with 1d data without 10-fold cross validation is: 67.85383244206774%
+Accuracy for Gaussian Naive Bayes Classifier with 1d data with 10-fold cross validation is: 67.65760121441025%
+
+Accuracy for K Nearest Neighbours Classifier with 20 neighbours and with fragments with 10-fold cross validation is: 30.842931611223733%
+Accuracy for K Nearest Neighbours Classifier with 100 neighbours and with fragments with 10-fold cross validation is: 29.506887176710272%
+Accuracy for K Nearest Neighbours Classifier with 100 neighbours and with fragments without 10-fold cross validation is: 21.21212121212121%
+Accuracy for K Nearest Neighbours Classifier with 100 neighbours with 1d data without 10-fold cross validation is: 90.38859180035651%
+Accuracy for K Nearest Neighbours Classifier with 100 neighbours with 1d data with 10-fold cross validation is: 92.6388390620452%

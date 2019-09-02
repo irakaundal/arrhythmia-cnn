@@ -1,5 +1,5 @@
 from utils import TRAIN_CSV, TEST_CSV, BS, NUM_EPOCHS, BASE_DIR, SAMPLE_DIR,encoding
-from model import define_model
+from model_2d import define_model
 from sklearn.model_selection import StratifiedKFold
 from keras.callbacks import ModelCheckpoint
 import os
